@@ -17,4 +17,4 @@ add_executable(test "test/vec.cpp"
                     "src/map.cpp"    "include/map.h"
                     "src/point.cpp" "include/point.h")
 
-TARGET_LINK_LIBRARIES(MAP ${SDL2_LIBRARIES} ${SDL2_ttf_LIBRARIES})
+TARGET_LINK_LIBRARIES(MAP ${SDL2_LIBRARIES})
