@@ -5,9 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(PkgConfig REQUIRED)
 PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-PKG_SEARCH_MODULE(SDL2_ttf REQUIRED sdl2_ttf)
 
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS} ${SDL2_ttf_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
 include_directories(include)
 
 add_executable(MAP "src/main.cpp"
