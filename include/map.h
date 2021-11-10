@@ -12,6 +12,8 @@ enum class Terrain {
     LOCATION,
 };
 
+std::ostream& operator<< (std::ostream&, Terrain);
+
 class Map {
 
     int width, height;

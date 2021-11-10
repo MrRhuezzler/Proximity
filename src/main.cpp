@@ -1,4 +1,5 @@
 #include <iostream>
+#include <quadTree.h>
 #include <SDL2/SDL.h>
 
 #define WIDTH 1088
@@ -42,5 +43,5 @@ int main(int argv, char** args) {
         SDL_RenderPresent(renderer);
 
     }
-
+    return 0;
 }

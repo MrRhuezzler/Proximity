@@ -12,10 +12,13 @@ include_directories(include)
 
 add_executable(MAP "src/main.cpp"
                    "src/map.cpp"    "include/map.h"
-                   "src/point.cpp" "include/point.h")
+                   "src/point.cpp" "include/point.h"
+                   "src/quadTree.cpp" "include/quadTree.h")
 
 add_executable(test "test/vec.cpp"
                     "src/map.cpp"    "include/map.h"
-                    "src/point.cpp" "include/point.h")
+                    "src/point.cpp" "include/point.h"
+                    "src/quadTree.cpp" "include/quadTree.h")
 
 TARGET_LINK_LIBRARIES(MAP ${SDL2_LIBRARIES} ${SDL2_ttf_LIBRARIES})
+TARGET_LINK_LIBRARIES(test ${SDL2_LIBRARIES} ${SDL2_ttf_LIBRARIES})
