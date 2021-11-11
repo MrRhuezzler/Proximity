@@ -1,6 +1,5 @@
 #include <iostream>
 
-#define SDL_MAIN_HANDLED
 #include "SDL.h"
 
 #include "imgui.h"
@@ -39,10 +38,7 @@ int main(int argv, char** args) {
     ImGui_ImplSDL2_InitForSDLRenderer(window);
     ImGui_ImplSDLRenderer_Init(renderer);
 
-    Map map(WIDTH, HEIGHT - 100);
-
-    bool show_demo_window = true;
-    bool show_another_window = false;
+    Map map(WIDTH, HEIGHT - 100, 10, 10);
 
     SDL_Event event;
     bool is_running = true;
@@ -65,8 +61,10 @@ int main(int argv, char** args) {
         SDL_RenderClear(renderer);
 
         map.UI();
-        map.draw(renderer);
-        map.update();
+        map.Draw(renderer);
+        map.Update();
+
+        // Renderering stuffs
 
         ImGui::Render();
         ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
@@ -81,5 +79,7 @@ int main(int argv, char** args) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    return 0;
 
 }

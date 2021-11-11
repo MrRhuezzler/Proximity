@@ -46,8 +46,8 @@ class Map {
 
     public:
         Map(int width, int height, int numOfCols = 10, int numOfRows = 10);
-        void draw(SDL_Renderer *renderer);
-        void update();
+        void Draw(SDL_Renderer *renderer);
+        void Update();
         void UI();
 
     private:

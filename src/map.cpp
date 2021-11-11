@@ -63,7 +63,7 @@ void Map::setColor(SDL_Renderer *renderer, Terrain type){
     switch (type)
     {
     case Terrain::BOUNDARY:
-        SDL_SetRenderDrawColor(renderer, 100, 150, 120, 255);
+        SDL_SetRenderDrawColor(renderer, 102, 102, 102, 255);
         break;
 
     case Terrain::LOCATION:
@@ -75,7 +75,7 @@ void Map::setColor(SDL_Renderer *renderer, Terrain type){
     }
 }
 
-void Map::draw(SDL_Renderer *renderer){
+void Map::Draw(SDL_Renderer *renderer){
 
     for(int i = 0; i < _w * _h; i++){
         if(map[i].type != Terrain::VOID){
@@ -122,7 +122,7 @@ void Map::setMode(){
 
 }
 
-void Map::update(){
+void Map::Update(){
 
     SDL_PumpEvents();
     const Uint8 *kState = SDL_GetKeyboardState(NULL);
@@ -142,6 +142,9 @@ void Map::update(){
         break;
 
     default:
+        // ImGui::Begin("Debug");
+        // ImGui::Text("Mode Count State");
+        // ImGui::End();
         break;
     }
 
@@ -153,8 +156,8 @@ void Map::UI(){
 
     ImGui::Begin("Proximity Detector");
 
-    const char* elem_name = (mode >= Mode::IDLE && mode < Mode::MODE_COUNT) ? modeNames[(int)mode] : "Unknown";
-    ImGui::SliderInt("Mode", (int*)(&mode), 0, ((int)Mode::MODE_COUNT) - 1, elem_name);
+    const char* currentModeName = (mode >= Mode::IDLE && mode < Mode::MODE_COUNT) ? modeNames[(int)mode] : "Unknown";
+    ImGui::SliderInt("Mode", (int*)(&mode), 0, ((int)Mode::MODE_COUNT) - 1, currentModeName);
 
     ImGui::End();
 
