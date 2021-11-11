@@ -1,20 +1,39 @@
 cmake_minimum_required(VERSION 3.17)
-project(MAP)
+project(Proximity)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(PkgConfig REQUIRED)
-PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+set(SDL_DIR "SDL-main")
+add_subdirectory(${SDL_DIR})
 
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
-include_directories(include)
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
+add_library(IMGUI STATIC)
 
-add_executable(MAP "src/main.cpp"
-                   "src/map.cpp"    "include/map.h"
-                   "src/point.cpp" "include/point.h")
+target_sources( IMGUI
+                PRIVATE
+                    ${IMGUI_DIR}/imgui_demo.cpp
+                    ${IMGUI_DIR}/imgui_draw.cpp
+                    ${IMGUI_DIR}/imgui_tables.cpp
+                    ${IMGUI_DIR}/imgui_widgets.cpp
+                    ${IMGUI_DIR}/imgui.cpp
 
-add_executable(test "test/vec.cpp"
-                    "src/map.cpp"    "include/map.h"
-                    "src/point.cpp" "include/point.h")
+                PRIVATE
+                    ${IMGUI_DIR}/backends/imgui_impl_sdlrenderer.cpp
+                    ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp
+                )
 
-TARGET_LINK_LIBRARIES(MAP ${SDL2_LIBRARIES})
+target_include_directories( IMGUI
+                            PUBLIC ${IMGUI_DIR}
+                            PUBLIC ${IMGUI_DIR}/backends
+                            PUBLIC ${SDL2_INCLUDE_DIRS})
+
+target_link_libraries(IMGUI PUBLIC ${OPENGL_LIBRARIES} SDL2main SDL2-static ${CMAKE_DL_LIBS})
+
+
+include_directories(include ${SDL_DIR}/include ${IMGUI_DIR} ${IMGUI_DIR} ${IMGUI_DIR}/backends)
+
+add_executable(${PROJECT_NAME} "src/main.cpp"
+                "src/map.cpp" "include/map.h"
+                "src/point.cpp" "include/point.h")
+
+target_link_libraries(${PROJECT_NAME} SDL2main SDL2-static IMGUI)

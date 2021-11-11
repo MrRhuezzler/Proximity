@@ -1,4 +1,4 @@
-#include <point.h>
+#include "point.h"
 #include <iostream>
 
 std::ostream& operator<<(std::ostream& out, const Point& v){
