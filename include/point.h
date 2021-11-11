@@ -9,6 +9,7 @@ class Point {
         float x;
         float y;
 
+        Point();
         Point(float x, float y);
 
         Point operator+(Point& v);

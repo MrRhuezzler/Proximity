@@ -1,4 +1,9 @@
 #include <iostream>
+<<<<<<< HEAD
+=======
+#include <quadTree.h>
+#include <SDL2/SDL.h>
+>>>>>>> eef2ce8e151b75c5de78cab4a85333bd41591a4b
 
 #define SDL_MAIN_HANDLED
 #include "SDL.h"

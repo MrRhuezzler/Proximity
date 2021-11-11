@@ -23,6 +23,7 @@ enum class Mode {
 };
 
 // static const char* modeNames[(int)Mode::MODE_COUNT] = {"IDLE", "EDIT"};
+std::ostream& operator<< (std::ostream&, Terrain);
 
 class Map {
 
