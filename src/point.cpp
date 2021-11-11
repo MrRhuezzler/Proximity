@@ -14,22 +14,22 @@ Point::Point(float x, float y)
 :x(x), y(y)
 {}
 
-Point Point::operator+(Point& v)
+Point Point::operator+(Point v)
 {
     return Point(x + v.x, y + v.y);
 }
 
-Point Point::operator-(Point& v) 
+Point Point::operator-(Point v) 
 {
     return Point(x - v.x, y - v.y);
 }
 
-Point Point::operator+=(Point& v) 
+Point Point::operator+=(Point v) 
 {
     return Point(x + v.x, y + v.y);
 }
 
-Point Point::operator-=(Point& v) 
+Point Point::operator-=(Point v) 
 {
     return Point(x - v.x, y - v.y);
 }

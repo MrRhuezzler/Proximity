@@ -38,7 +38,7 @@ int main(int argv, char** args) {
     ImGui_ImplSDL2_InitForSDLRenderer(window);
     ImGui_ImplSDLRenderer_Init(renderer);
 
-    Map map(WIDTH, HEIGHT - 100, 10, 10);
+    Map map(WIDTH - 200, HEIGHT, 10, 10);
 
     SDL_Event event;
     bool is_running = true;

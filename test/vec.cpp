@@ -1,7 +1,7 @@
 #include <iostream>
 #include "quadTree.h"
 
-int main(int argv, char** args) {
+int main() {
     Quad Q = Quad(Point(0, 0), Point(8, 8), 4);
     Node *a = new Node(1, 2, Terrain::LOCATION);
     Node *b = new Node(5, 3, Terrain::LOCATION);

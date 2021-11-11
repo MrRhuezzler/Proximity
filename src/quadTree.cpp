@@ -149,9 +149,9 @@ void Quad::insert(Node* n)
     }
 }
 
-list<Node*> Quad::inRange(Point lT, Point rB, Terrain target)
+std::list<Node*> Quad::inRange(Point lT, Point rB, Terrain target)
 {
-    list<Node*> output;
+    std::list<Node*> output;
 
     if(!intersects(lT, rB))
     {

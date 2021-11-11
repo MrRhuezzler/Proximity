@@ -1,11 +1,14 @@
+#ifndef __QUADTREE_H__
+#define __QUADTREE_H__
+
 #include <iostream>
 #include <string>
 #include <list>
 
-#include <point.h>
-#include <map.h>
+#include "point.h"
+#include "map.h"
 
-using namespace std;
+enum class Terrain;
 
 class Node : public Point
 {
@@ -25,7 +28,7 @@ class Quad
         Quad* northWest;
         Quad* southEast;
         Quad* southWest;
-        list<Node*> nodeList;
+        std::list<Node*> nodeList;
         int nodeCount;
         const int threshold;
     public:
@@ -37,8 +40,10 @@ class Quad
         bool inQuad(Node*);
         void split();
         bool isEmpty();
-        list<Node*> inRange(Point, Point, Terrain);
+        std::list<Node*> inRange(Point, Point, Terrain);
         bool intersects(Point, Point);
 
         void display();   //--> TO BE DEBUGGED
 };
+
+#endif // __QUADTREE_H__

@@ -12,10 +12,10 @@ class Point {
         Point();
         Point(float x, float y);
 
-        Point operator+(Point& v);
-        Point operator-(Point& v);
-        Point operator+=(Point& v);
-        Point operator-=(Point& v);
+        Point operator+(Point v);
+        Point operator-(Point v);
+        Point operator+=(Point v);
+        Point operator-=(Point v);
 
         friend std::ostream& operator<<(std::ostream& out, const Point& v);
 
