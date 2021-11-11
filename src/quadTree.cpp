@@ -54,7 +54,10 @@ bool Quad::isEmpty()
     {
         return true;
     }
-    return false;
+    else
+    {
+        return false;
+    }
 }
 
 void Quad::split()
@@ -68,8 +71,6 @@ void Quad::split()
 
 void Quad::insert(Node* n)
 {
-    //std::cout<<"INSERT: "<<n->type<<"\n\n";
-
     if(!inQuad(n))
     {
         //cout<<"Node is outside the quad\n";
@@ -196,43 +197,47 @@ bool Quad::intersects(Point u, Point v)
     }
 }
 
-/*
-void Quad::display()    //-->     TO BE DEBUGGED
+
+void Quad::display()
 {
     for(auto i = nodeList.begin(); i != nodeList.end(); ++i)
     {
         std::cout<<(*i)->type<<"\n";
     }
-    if(northWest)
+
+    if(northWest != NULL)
     {
         std::cout<<"\nInner:\n";
+
+        if(!northWest->isEmpty())           
+        {
+            std::cout<<"NorthWest:\n";
+            northWest->display();
+            std::cout<<"\n";
+        }
+        if(!northEast->isEmpty())
+        {
+            std::cout<<"NorthEast:\n";
+            northEast->display();
+            std::cout<<"\n";
+        }
+        if(!southWest->isEmpty())
+        {
+            std::cout<<"SouthWest:\n";
+            southWest->display();
+            std::cout<<"\n";
+        }
+        if(!southEast->isEmpty())
+        {
+            std::cout<<"SouthEast:\n";
+            southEast->display();
+            std::cout<<"\n";
+        }
     }
-    if(!northWest->isEmpty())
-    {
-        std::cout<<"NorthWest:\n";
-        northWest->display();
-        std::cout<<"\n";
-    }
-    if(!northEast->isEmpty())
-    {
-        std::cout<<"NorthEast:\n";
-        northEast->display();
-        std::cout<<"\n";
-    }
-    if(!southWest->isEmpty())
-    {
-        std::cout<<"SouthWest:\n";
-        southWest->display();
-        std::cout<<"\n";
-    }
-    if(!southEast->isEmpty())
-    {
-        std::cout<<"SouthEast:\n";
-        southEast->display();
-        std::cout<<"\n";
-    }
+    
+    return;
 }
-*/
+
 
 Quad::~Quad()
 {
@@ -245,5 +250,4 @@ Quad::~Quad()
     if(northWest) delete northWest;
     if(southEast) delete southEast;
     if(southWest) delete southWest;
-    //cout<<"DELETED\n";
 }

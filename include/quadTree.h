@@ -40,5 +40,5 @@ class Quad
         list<Node*> inRange(Point, Point, Terrain);
         bool intersects(Point, Point);
 
-        //void display();   --> TO BE DEBUGGED
+        void display();   //--> TO BE DEBUGGED
 };
