@@ -3,7 +3,7 @@ project(Proximity)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SDL_DIR "SDL-main")
+set(SDL_DIR "SDL")
 add_subdirectory(${SDL_DIR})
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
