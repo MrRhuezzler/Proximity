@@ -1,0 +1,6 @@
+[submodule "imgui"]
+	path = imgui
+	url = https://github.com/ocornut/imgui
+[submodule "SDL"]
+	path = SDL
+	url = https://github.com/libsdl-org/SDL
