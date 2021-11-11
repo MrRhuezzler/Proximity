@@ -34,6 +34,12 @@ include_directories(include ${SDL_DIR}/include ${IMGUI_DIR} ${IMGUI_DIR} ${IMGUI
 
 add_executable(${PROJECT_NAME} "src/main.cpp"
                 "src/map.cpp" "include/map.h"
-                "src/point.cpp" "include/point.h")
+                "src/point.cpp" "include/point.h"
+                "src/quadTree.cpp" "include/quadTree.h")
 
-target_link_libraries(${PROJECT_NAME} SDL2main SDL2-static IMGUI)
+add_executable(test "test/vec.cpp"
+                "src/map.cpp" "include/map.h"
+                "src/point.cpp" "include/point.h"
+                "src/quadTree.cpp" "include/quadTree.h")
+
+target_link_libraries(test SDL2main SDL2-static IMGUI)
