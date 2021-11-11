@@ -14,6 +14,11 @@ enum class Terrain {
     VOID,
     BOUNDARY,
     LOCATION,
+    HOTEL,
+    MARKET,
+    HOSPITAL,
+    BOUTIQUE,
+    TERRAIN_COUNT
 };
 
 enum class Mode {
@@ -40,6 +45,7 @@ class Map {
     std::vector<mapCell> map;
 
     Mode mode;
+    Terrain terrain;        //The terrain to be drawn
 
     // mouse debounce
     bool mousePressed;

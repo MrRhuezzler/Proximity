@@ -1,6 +1,7 @@
 #include "map.h"
 
 static const char* modeNames[(int)Mode::MODE_COUNT] = {"IDLE", "EDIT"};
+static const char* terrainNames[(int)Terrain::TERRAIN_COUNT] = {"VOID", "BOUNDARY", "LOCATION", "HOTEL", "MARKET", "HOSPITAL", "BOUTIQUE"};
 
 std::ostream& operator<< (std::ostream& stm, Terrain t)
 {
@@ -10,6 +11,14 @@ std::ostream& operator<< (std::ostream& stm, Terrain t)
             return stm << "LOCATION";
         case Terrain::BOUNDARY:
             return stm << "BOUNDARY";
+        case Terrain::BOUTIQUE:
+            return stm << "BOUTIQUE";
+        case Terrain::HOSPITAL:
+            return stm << "HOSPITAL";
+        case Terrain::HOTEL:
+            return stm << "HOTEL";
+        case Terrain::MARKET:
+            return stm << "MARKET";
         case Terrain::VOID:
             return stm << "VOID" ;
         default:
@@ -22,6 +31,7 @@ Map::Map(int width, int height, int numOfCols, int numOfRows)
 {
 
     mode = Mode::IDLE;
+    terrain = Terrain::VOID;
     mousePressed = false;
 
     _w = width / numOfCols;
@@ -69,6 +79,23 @@ void Map::setColor(SDL_Renderer *renderer, Terrain type){
     case Terrain::LOCATION:
         SDL_SetRenderDrawColor(renderer, 255, 0, 150, 255);
         break;
+
+    case Terrain::HOTEL:
+        SDL_SetRenderDrawColor(renderer, 56, 242, 87, 255);
+        break;
+
+    case Terrain::HOSPITAL:
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        break;
+
+    case Terrain::MARKET:
+        SDL_SetRenderDrawColor(renderer, 33, 23, 227, 255);
+        break;
+
+    case Terrain::BOUTIQUE:
+        SDL_SetRenderDrawColor(renderer, 23, 227, 186, 255);
+        break;
+
     default:
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         break;
@@ -78,12 +105,12 @@ void Map::setColor(SDL_Renderer *renderer, Terrain type){
 void Map::Draw(SDL_Renderer *renderer){
 
     for(int i = 0; i < _w * _h; i++){
+        //map[i].type = terrain;                                              //NEW-Agi
         if(map[i].type != Terrain::VOID){
             setColor(renderer, map[i].type);
             SDL_RenderFillRectF(renderer, &map[i].dstRect);
         }
     }
-
 }
 
 void Map::edit(){
@@ -99,10 +126,10 @@ void Map::edit(){
     if(!mousePressed && (mState & SDL_BUTTON_LMASK)){
         mousePressed = true;
         if(map[transform(mouse)].type != Terrain::BOUNDARY)
-            if(map[transform(mouse)].type == Terrain::LOCATION)
+            if(map[transform(mouse)].type != Terrain::VOID)
                 map[transform(mouse)].type = Terrain::VOID;
             else
-                map[transform(mouse)].type = Terrain::LOCATION;
+                map[transform(mouse)].type = terrain;
     }
 
     if(mousePressed && (!(mState & SDL_BUTTON_LMASK))){
@@ -133,34 +160,35 @@ void Map::Update(){
 
     switch (mode)
     {
-    case Mode::IDLE:
-        setMode();
-        break;
+        case Mode::IDLE:
+            setMode();
+            break;
 
-    case Mode::EDIT:
-        edit();
-        break;
+        case Mode::EDIT:
+            edit();
+            break;
 
-    default:
-        // ImGui::Begin("Debug");
-        // ImGui::Text("Mode Count State");
-        // ImGui::End();
-        break;
+        default:
+            // ImGui::Begin("Debug");
+            // ImGui::Text("Mode Count State");
+            // ImGui::End();
+            break;
     }
-
 }
 
 
 
 void Map::UI(){
 
-    ImGui::Begin("Proximity Detector");
-
+    ImGui::Begin("Mode Selector");
     const char* currentModeName = (mode >= Mode::IDLE && mode < Mode::MODE_COUNT) ? modeNames[(int)mode] : "Unknown";
     ImGui::SliderInt("Mode", (int*)(&mode), 0, ((int)Mode::MODE_COUNT) - 1, currentModeName);
-
     ImGui::End();
 
+    ImGui::Begin("Terrain Selector");
+    const char* currentTerrainName = (terrain >= Terrain::VOID && terrain < Terrain::TERRAIN_COUNT) ? terrainNames[(int)terrain] : "Unknown";
+    ImGui::SliderInt("Terrain", (int*)(&terrain), 0, ((int)Terrain::TERRAIN_COUNT) - 1, currentTerrainName);
+    ImGui::End();
 }
 
 // i - cols
