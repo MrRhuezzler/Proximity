@@ -30,12 +30,16 @@ target_include_directories( IMGUI
 target_link_libraries(IMGUI PUBLIC ${OPENGL_LIBRARIES} SDL2main SDL2-static ${CMAKE_DL_LIBS})
 
 
+add_compile_definitions(SDL_MAIN_HANDLED)
 include_directories(include ${SDL_DIR}/include ${IMGUI_DIR} ${IMGUI_DIR} ${IMGUI_DIR}/backends)
 
 add_executable(${PROJECT_NAME} "src/main.cpp"
                 "src/map.cpp" "include/map.h"
                 "src/point.cpp" "include/point.h"
                 "src/quadTree.cpp" "include/quadTree.h")
+
+target_link_libraries(${PROJECT_NAME} SDL2main SDL2-static IMGUI)
+
 
 add_executable(test "test/vec.cpp"
                 "src/map.cpp" "include/map.h"

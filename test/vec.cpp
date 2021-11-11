@@ -1,5 +1,5 @@
 #include <iostream>
-#include <quadTree.h>
+#include "quadTree.h"
 
 int main(int argv, char** args) {
     Quad Q = Quad(Point(0, 0), Point(8, 8), 4);
