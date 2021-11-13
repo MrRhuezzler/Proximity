@@ -149,25 +149,6 @@ void Map::Draw(SDL_Renderer *renderer){
         SDL_RenderDrawLineF(renderer, zSpace[i].x, zSpace[i].y, zSpace[i + 1].x, zSpace[i + 1].y);
     }
 
-    
-    int x, y;
-    SDL_PumpEvents();
-    const Uint32 mState = SDL_GetMouseState(&x, &y);
-
-    if(x > width || x < 0 || y < 0 || y > height){
-        return;
-    }
-
-    Point mouse(x / numOfCols, y / numOfRows);
-    Point tl = (mouse - Point(10, 10));
-    Point rb = (mouse + Point(10, 10));
-
-    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
-    std::vector<Point> highlight = zorder.inRange(tl, rb);
-    for(int i = 0; i < highlight.size() - 1; i++){
-        SDL_RenderDrawLineF(renderer, highlight[i].x, highlight[i].y, highlight[i + 1].x, highlight[i + 1].y);
-    }
-
     //Drawing the search range boundary
     if(searchProximityVisible && mode == Mode::QUERY){
 
