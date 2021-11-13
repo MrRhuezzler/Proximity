@@ -3,7 +3,7 @@
 
 Node::Node() : Point()
 {
-    type = Terrain::LOCATION;
+    type = Terrain::LOCATION;       // By default the terrain of a Node is set to LOCATION
 }
 
 Node::Node(int x, int y, Terrain t = Terrain::LOCATION) : Point(x, y)
@@ -14,7 +14,8 @@ Node::Node(int x, int y, Terrain t = Terrain::LOCATION) : Point(x, y)
 Node::~Node()
 {}
 
-bool contains(Node* n, Point l, Point r)
+// Utililty function to check if the node is in the specified rectangle
+bool contains(Node* n, Point l, Point r)        
 {
     return (n->x >= l.x && n->x <= r.x && n->y >= l.y && n->y <= r.y);
 }
@@ -23,6 +24,7 @@ Quad::Quad():threshold(4), nodeCount(0)
 {
     topLeft = Point(0, 0);
     botRight = Point(8, 8);
+
     northEast = NULL;
     northWest = NULL;
     southEast = NULL;
@@ -33,6 +35,7 @@ Quad::Quad(Point tL, Point bR, int thr):threshold(thr), nodeCount(0)
 {
     topLeft = tL;
     botRight = bR;
+
     northEast = NULL;
     northWest = NULL;
     southEast = NULL;
@@ -71,31 +74,30 @@ void Quad::split()
 
 void Quad::insert(Node* n)
 {
-    if(!inQuad(n))
+    if(!inQuad(n))                  // If the node is not within the boundary of the quad, return
     {
-        //cout<<"Node is outside the quad\n";
         return;
     }
 
-    if((topLeft.x + botRight.x) / 2 >= n->x)          //WEST
+    if((topLeft.x + botRight.x) / 2 >= n->x)                // WEST
     {
-        if((topLeft.y + botRight.y) / 2 >= n->y)      //NORTH
+        if((topLeft.y + botRight.y) / 2 >= n->y)            // NORTH
         {           
-            if(nodeCount + 1 > threshold)
+            if(nodeCount + 1 > threshold)                   // Checking if inserting the node will exceed the threshold
             {
-                if(northWest == NULL)
+                if(northWest == NULL)                       // If it has not already been split, we split the quad
                 {
                     split();
                 }
-                northWest->insert(n);
+                northWest->insert(n);                       // Recursively insert the node into the northwest quad
             }
-            else
+            else                                            // If threshold is not exceeded, simply insert the node
             {
-                nodeList.push_back(n);
+                nodeList.push_back(n);                     
                 nodeCount++;
             }
         }
-        else                                                //SOUTH
+        else                                                // SOUTH
         {
             if(nodeCount + 1 > threshold)
             {
@@ -112,9 +114,9 @@ void Quad::insert(Node* n)
             }
         }
     }
-    else                                                    //EAST
+    else                                                    // EAST
     {
-        if((topLeft.y + botRight.y) / 2 >= n->y)        //NORTH
+        if((topLeft.y + botRight.y) / 2 >= n->y)            // NORTH
         {
             if(nodeCount + 1 > threshold)
             {
@@ -130,7 +132,7 @@ void Quad::insert(Node* n)
                 nodeCount++;
             }
         }
-        else                                                //SOUTH
+        else                                                // SOUTH
         {
             if(nodeCount + 1 > threshold)
             {
@@ -151,28 +153,29 @@ void Quad::insert(Node* n)
 
 std::list<Node*> Quad::inRange(Point lT, Point rB, Terrain target)
 {
-    std::list<Node*> output;
+    std::list<Node*> output;        // output is the list of nodes of type 'target' inside the specified query region
 
-    if(!intersects(lT, rB))
+    if(!intersects(lT, rB))         // If the query region is outside the quad boundary, simply return
     {
         return output;
     }
 
-    for(auto i = nodeList.begin(); i != nodeList.end(); ++i)
+    for(auto i = nodeList.begin(); i != nodeList.end(); ++i)        // Traversing all the nodes in the quad(Maximum of 'threshold' nodes)
     {
-        if(contains(*i, lT, rB) && target == (*i)->type)
+        if(contains(*i, lT, rB) && target == (*i)->type)            // Checking if the node is inside the query region and if it has the desired type
         {
-            output.push_back(*i);
+            output.push_back(*i);                                   // Add the node to the output list
         }
     }
 
-    if(northWest == NULL)
+    if(northWest == NULL)       // Checking if the quad has been split
     {
-        return output;
+        return output;          // If it has not been split, there is nothing more to check
     }
     else
     {
-        output.splice(output.end(), northWest->inRange(lT, rB, target));
+        // To the output list we recursively add the nodes that are inside the query range from the inner quads
+        output.splice(output.end(), northWest->inRange(lT, rB, target));        
         output.splice(output.end(), northEast->inRange(lT, rB, target));
         output.splice(output.end(), southWest->inRange(lT, rB, target));
         output.splice(output.end(), southEast->inRange(lT, rB, target));
@@ -246,6 +249,8 @@ Quad::~Quad()
         delete nodeList.front();
         nodeList.pop_front();
     }
+
+    // Recursively deletes all the inner quads
     if(northEast) delete northEast;
     if(northWest) delete northWest;
     if(southEast) delete southEast;

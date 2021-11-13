@@ -121,34 +121,35 @@ void Map::setColor(SDL_Renderer *renderer, Terrain type){
 
 void Map::Draw(SDL_Renderer *renderer){
 
-    // for(int i = 0; i < _w * _h; i++){                                  //NEW-Agi
-    //     if(map[i].type != Terrain::VOID){
+    for(int i = 0; i < _w * _h; i++){                                  //NEW-Agi
+        if(map[i].type != Terrain::VOID){
 
-    //         if(map[i].is_glowing){
+            if(map[i].is_glowing){
 
-    //             map[i].dstRect.x = map[i].srcRect.x - (highlightBorder / 2);
-    //             map[i].dstRect.y = map[i].srcRect.y - (highlightBorder / 2);
-    //             map[i].dstRect.w = map[i].srcRect.w + (highlightBorder);
-    //             map[i].dstRect.h = map[i].srcRect.h + (highlightBorder);
-    //             setColor(renderer, Terrain::VOID);
-    //             SDL_RenderFillRectF(renderer, &map[i].dstRect);
+                map[i].dstRect.x = map[i].srcRect.x - (highlightBorder / 2);
+                map[i].dstRect.y = map[i].srcRect.y - (highlightBorder / 2);
+                map[i].dstRect.w = map[i].srcRect.w + (highlightBorder);
+                map[i].dstRect.h = map[i].srcRect.h + (highlightBorder);
+                setColor(renderer, Terrain::VOID);
+                SDL_RenderFillRectF(renderer, &map[i].dstRect);
 
-    //         }
+            }
 
-    //         setColor(renderer, map[i].type);
-    //         map[i].dstRect = map[i].srcRect;
-    //         SDL_RenderFillRectF(renderer, &map[i].dstRect);
+            setColor(renderer, map[i].type);
+            map[i].dstRect = map[i].srcRect;
+            SDL_RenderFillRectF(renderer, &map[i].dstRect);
 
-    //     }
-    // }
+        }
+    }
 
+/*
     std::vector<Point>& zSpace = zorder.getSpace();
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     for(int i = 0; i < zSpace.size() - 1; i++){
         SDL_RenderDrawLineF(renderer, zSpace[i].x, zSpace[i].y, zSpace[i + 1].x, zSpace[i + 1].y);
     }
-
+*/
     //Drawing the search range boundary
     if(searchProximityVisible && mode == Mode::QUERY){
 
