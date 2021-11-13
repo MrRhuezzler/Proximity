@@ -128,12 +128,18 @@ int Z::binToDec(std::string bitString){
     return x;
 }
 
-std::string Z::computeZCode(Point p) 
+int Z::computeZCode(Point p) 
 {
-    return pointBitStringToZCode(pointToBitString(p));
+    return binToDec(pointBitStringToZCode(pointToBitString(p)));
 }
 
-std::vector<Point> Z::buildPath() 
+Point Z::computePoint(int zCode) 
+{
+    Z::pointBitString point = zCodeToPointBitString(toBitString(zCode));
+    return Point(binToDec(point.xBitString) * colScale, binToDec(point.yBitString) * rowScale);
+}
+
+std::vector<Point> Z::buildPath()
 {
     int maxPoints = (1 << resolution) * (1 << resolution) - 1;
     return buildPathFromRange(0, maxPoints);
@@ -150,173 +156,6 @@ std::vector<Point> Z::buildPathFromRange(int min, int max)
     }
 
     return path;
-}
-
-std::string Z::simpleReplaceAndFill(int pos, std::string source, char c, char fillc){
-
-    std::string prefix = source.substr(0, pos) + c;
-    std::string suffix = "";
-    for(int i = pos + 1; i < source.size(); i++){
-        suffix += fillc;
-    }
-    return prefix + suffix;
-
-}
-
-std::vector<Z::queryBox> Z::cutBox(char hyperPlaneDimension, int hyperPlaneCutIndex[], Point tl, Point br) 
-{
-
-    Z::pointBitString highStrings = pointToBitString(tl);
-    Z::pointBitString lowStrings = pointToBitString(br);
-
-    std::string x1Low = lowStrings.xBitString;
-    std::string y1Low = lowStrings.yBitString;
-    std::string x1High = highStrings.xBitString;
-    std::string y1High = highStrings.yBitString;
-
-    if(hyperPlaneDimension == '0'){
-        x1High = simpleReplaceAndFill(hyperPlaneCutIndex[0], x1High, '0', '1');
-    }else{
-        y1High = simpleReplaceAndFill(hyperPlaneCutIndex[1], y1High, '0', '1');
-    }
-
-    std::string x2Low = lowStrings.xBitString;
-    std::string y2Low = lowStrings.yBitString;
-    std::string x2High = highStrings.xBitString;
-    std::string y2High = highStrings.yBitString;
-
-    if(hyperPlaneDimension == '1'){
-        x2Low = simpleReplaceAndFill(hyperPlaneCutIndex[0], x2Low, '1', '0');
-    }else{
-        y2Low = simpleReplaceAndFill(hyperPlaneCutIndex[1], y2Low, '1', '0');
-    }
-
-    std::vector<Z::queryBox> box;
-
-    Z::queryBox box1 = {
-        Point(binToDec(x1High), binToDec(y1High)),
-        Point(binToDec(x1Low), binToDec(y1Low))
-    };
-    box.push_back(box1);
-
-    Z::queryBox box2 = {
-        Point(binToDec(x2High), binToDec(y2High)),
-        Point(binToDec(x2Low), binToDec(y2Low))
-    };
-
-    box.push_back(box2);
-
-    return box;
-
-}
-
-std::vector<Point> Z::getPoints(std::vector<Z::queryZCode>& zRanges){
-
-    std::vector<Point> points;
-    for(Z::queryZCode& z: zRanges){
-        std::vector<Point> inThisRange = buildPathFromRange(z.low, z.high);
-        points.insert(points.end(), inThisRange.begin(), inThisRange.end());
-    }
-
-    return points;
-
-}
-
-std::vector<Point> Z::inRange(Point tl, Point br){
-    std::vector<Z::queryZCode> zRanges = getRanges(0, tl, br, zMapFunction.size() - 1);
-    return getPoints(zRanges);
-}
-
-std::vector<Z::queryZCode> Z::getRanges(int hyperPlanePosition, Point tl, Point br, int highestBit) 
-{
-
-    std::string zCodeLow = computeZCode(br);
-    std::string zCodeHigh = computeZCode(tl);
-
-    int index = 0;
-    char hyperPlaneDimension = '0';
-    int hyperPlaneCutIndex[2] = {-1, -1};
-
-    for(int i = 0; i < highestBit; i++){
-
-        hyperPlaneDimension = zMapFunction.at(i);
-        if(zMapFunction.at(i) == '0'){
-            hyperPlaneCutIndex[0]++;
-        }else{
-            hyperPlaneCutIndex[1]++;
-        }
-
-        index = i;
-        if(zCodeHigh.at(index)  != zCodeLow.at(i)){
-            break;
-        }
-
-    }
-
-    if(index >= highestBit - 1){
-    
-        std::vector<Z::queryZCode> returned = std::vector<Z::queryZCode>();
-        Z::queryZCode z1 = {binToDec(zCodeLow), binToDec(zCodeHigh)};
-        returned.push_back(z1);
-        return returned;
-
-    }
-
-    bool allOnes = true;
-    bool allZeros = true;
-
-    for(int i = index; i < highestBit; i++){
-        if(zCodeHigh.at(i) != '1'){
-            allOnes = false;
-            break;
-        }
-
-        if(zCodeLow.at(i) != '0'){
-            allZeros = false;
-            break;
-        }
-    }
-
-    if(allOnes && allZeros){
-
-        std::vector<Z::queryZCode> returned = std::vector<Z::queryZCode>();
-        Z::queryZCode z1 = {binToDec(zCodeLow), binToDec(zCodeHigh)};
-        returned.push_back(z1);
-        return returned;
-
-    }
-
-    std::vector<Z::queryBox> boxes = cutBox(hyperPlaneDimension, hyperPlaneCutIndex, tl, br);
-
-    std::vector<Z::queryZCode> leftRanges = getRanges(hyperPlanePosition, boxes[0].tl, boxes[0].br, highestBit);
-    std::vector<Z::queryZCode> rightRanges = getRanges(hyperPlanePosition, boxes[1].tl, boxes[1].br, highestBit);
-
-    int lastLeft = leftRanges[leftRanges.size() - 1].high;
-    int firstRight = rightRanges[0].low;
-
-    if(firstRight - lastLeft == 1){
-
-        Z::queryZCode merge = {
-            leftRanges[leftRanges.size() - 1].low,
-            rightRanges[0].high
-        };
-
-        leftRanges.pop_back();
-        leftRanges.push_back(merge);
-        for(int i = 1;i < rightRanges.size(); i++){
-            leftRanges.push_back(rightRanges.at(i));
-        }
-
-    }else{
-
-        for(int i = 0;i < rightRanges.size(); i++){
-            leftRanges.push_back(rightRanges.at(i));
-        }
-
-    }
-
-    return leftRanges;
-
 }
 
 Z::Z(){
@@ -350,4 +189,20 @@ Z::Z(int colScale, int rowScale, int resolution)
 std::vector<Point>& Z::getSpace() 
 {
     return space;
+}
+
+std::vector<Point> Z::getRange(Point tl, Point m, Point rb){
+
+    int zHigh = computeZCode(rb);
+    int zM = computeZCode(m);
+    int zLow = computeZCode(tl);
+
+    std::vector<Point> points;
+    for(int i = zLow; i < zHigh; i++){
+        Point p = computePoint(i);
+        if(p.x < tl.x || p.y < tl.y || p.x > rb.x || p.y > rb.y) continue;
+        points.push_back(computePoint(i));
+    }
+
+    return points;
 }

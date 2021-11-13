@@ -43,10 +43,14 @@ Map::Map(int width, int height, int numOfCols, int numOfRows)
     locations = std::set<int>();
     searchProximity = Point(100, 100);                              // The initial search range is set to a 100X100 square
     searchProximityVisible = false;
+    showZCurve = false;
     highlightBorder = 5;
     center = Point(width / 2.0, height / 2.0);
 
-    zorder = Z(5, 5, 7);
+    cScale = numOfCols;
+    rScale = numOfRows;
+    resolution = 4;
+    zorder = new Z(cScale, rScale, resolution);
 
     _w = width / numOfCols;
     _h = height / numOfRows;
@@ -121,33 +125,37 @@ void Map::setColor(SDL_Renderer *renderer, Terrain type){
 
 void Map::Draw(SDL_Renderer *renderer){
 
-    // for(int i = 0; i < _w * _h; i++){                                  //NEW-Agi
-    //     if(map[i].type != Terrain::VOID){
+    for(int i = 0; i < _w * _h; i++){
+        if(map[i].type != Terrain::VOID){
 
-    //         if(map[i].is_glowing){
+            if(map[i].is_glowing){
 
-    //             map[i].dstRect.x = map[i].srcRect.x - (highlightBorder / 2);
-    //             map[i].dstRect.y = map[i].srcRect.y - (highlightBorder / 2);
-    //             map[i].dstRect.w = map[i].srcRect.w + (highlightBorder);
-    //             map[i].dstRect.h = map[i].srcRect.h + (highlightBorder);
-    //             setColor(renderer, Terrain::VOID);
-    //             SDL_RenderFillRectF(renderer, &map[i].dstRect);
+                map[i].dstRect.x = map[i].srcRect.x - (highlightBorder / 2);
+                map[i].dstRect.y = map[i].srcRect.y - (highlightBorder / 2);
+                map[i].dstRect.w = map[i].srcRect.w + (highlightBorder);
+                map[i].dstRect.h = map[i].srcRect.h + (highlightBorder);
+                setColor(renderer, Terrain::VOID);
+                SDL_RenderFillRectF(renderer, &map[i].dstRect);
 
-    //         }
+            }
 
-    //         setColor(renderer, map[i].type);
-    //         map[i].dstRect = map[i].srcRect;
-    //         SDL_RenderFillRectF(renderer, &map[i].dstRect);
+            setColor(renderer, map[i].type);
+            map[i].dstRect = map[i].srcRect;
+            SDL_RenderFillRectF(renderer, &map[i].dstRect);
 
-    //     }
-    // }
-
-    std::vector<Point>& zSpace = zorder.getSpace();
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-    for(int i = 0; i < zSpace.size() - 1; i++){
-        SDL_RenderDrawLineF(renderer, zSpace[i].x, zSpace[i].y, zSpace[i + 1].x, zSpace[i + 1].y);
+        }
     }
+
+    if(showZCurve){
+
+        std::vector<Point>& zSpace = zorder->getSpace();
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        for(int i = 0; i < zSpace.size() - 1; i++){
+            SDL_RenderDrawLineF(renderer, zSpace[i].x, zSpace[i].y, zSpace[i + 1].x, zSpace[i + 1].y);
+        }
+
+    }
+
 
     //Drawing the search range boundary
     if(searchProximityVisible && mode == Mode::QUERY){
@@ -202,7 +210,6 @@ void Map::edit(){
                 }
             }
     }
-
 
 
     if(mousePressed && (!(mState & SDL_BUTTON_LMASK))){
@@ -311,6 +318,32 @@ void Map::Update(){
 void Map::UI(){
 
     ImGui::Begin("Map Editor");
+
+    ImGui::Checkbox("Show Z Curve", &showZCurve);
+
+    if(showZCurve){
+        
+        int res = resolution;
+        int cs = cScale;
+        int rs = rScale;
+        ImGui::DragInt("Resolution", &resolution, 1.0f, 2, 7);
+        ImGui::DragInt("x Scale", &cScale, 1.0f, 2, 30);
+        ImGui::DragInt("y Scale", &rScale, 1.0f, 2, 30);
+
+        bool resolutionChanged = res != resolution;
+        bool csChanged = cs != cScale;
+        bool rsChanged = rs != rScale;
+
+        if((resolutionChanged || csChanged || rsChanged)){
+
+            if(zorder){
+                delete zorder;
+            }
+
+            zorder = new Z(cScale, rScale, resolution);
+
+        }
+    }
 
     ImGui::Text("Mode Selector");
     const char* currentModeName = (mode >= Mode::IDLE && mode < Mode::MODE_COUNT) ? modeNames[(int)mode] : "Unknown";

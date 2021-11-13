@@ -8,7 +8,7 @@
 
 #include "map.h"
 
-#define WIDTH 1000
+#define WIDTH 1100
 #define HEIGHT 600
 
 int main(int argv, char** args) {
@@ -38,7 +38,7 @@ int main(int argv, char** args) {
     ImGui_ImplSDL2_InitForSDLRenderer(window);
     ImGui_ImplSDLRenderer_Init(renderer);
 
-    Map map(WIDTH - 200, HEIGHT, 10, 10);
+    Map map(WIDTH - 300, HEIGHT, 10, 10);
 
     SDL_Event event;
     bool is_running = true;

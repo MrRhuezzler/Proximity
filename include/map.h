@@ -65,12 +65,16 @@ class Map {
 
     // Mouse debounce
     bool mousePressed;
+    bool showZCurve;
 
     // Quad tree
     Quad *qt;
 
     // Zordering
-    Z zorder;
+    Z *zorder;
+    int resolution;
+    int cScale;
+    int rScale;
 
     public:
         Map(int width, int height, int numOfCols = 10, int numOfRows = 10);
