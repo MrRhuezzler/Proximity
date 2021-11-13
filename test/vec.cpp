@@ -1,26 +1,27 @@
 #include <iostream>
-#include "quadTree.h"
+#include "point.h"
+#include "zorder.h"
 
 int main() {
-    Quad Q = Quad(Point(0, 0), Point(8, 8), 4);
-    Node *a = new Node(1, 2, Terrain::LOCATION);
-    Node *b = new Node(5, 3, Terrain::LOCATION);
-    Node *c = new Node(2, 7, Terrain::LOCATION);
-    Node *d = new Node(6, 6, Terrain::LOCATION);
-    Node *e = new Node(2, 3, Terrain::LOCATION);
-    Node *f = new Node(1, 3, Terrain::LOCATION);
-    Node *g = new Node(3, 3, Terrain::LOCATION);
-    Node *h = new Node(2, 1, Terrain::LOCATION);
-    Node *i = new Node(3, 2, Terrain::LOCATION);
-    Q.insert(a);
-    Q.insert(b);
-    Q.insert(c);
-    Q.insert(d);
-    Q.insert(e);
-    Q.insert(f);
-    Q.insert(g);
-    Q.insert(h);
-    Q.insert(i);
-    Q.display();
+
+    Z order;
+    std::vector<Point> zSpace = order.getSpace();
+    // for(Point& p : zSpace){
+    //     std::cout << p << std::endl;
+    // }
+
+    std::vector<Z::queryZCode> h = order.getRanges(0, Point(5, 5), Point(0, 0), 7);
+
+    std::vector<Point> highlight = order.inRange(Point(5, 5), Point(0, 0));
+    for(Point& p : highlight){
+        std::cout << p << std::endl;
+    }
+
+    highlight = order.inRange(Point(0, 0), Point(5, 5));
+    for(Point& p : highlight){
+        std::cout << p << std::endl;
+    }
+
+
     return 0;
 }

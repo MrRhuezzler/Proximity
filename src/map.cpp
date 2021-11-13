@@ -44,6 +44,8 @@ Map::Map(int width, int height, int numOfCols, int numOfRows)
     highlightBorder = 5;
     center = Point(width / 2.0, height / 2.0);
 
+    zorder = Z(5, 5, 7);
+
     _w = width / numOfCols;
     _h = height / numOfRows;
     map = std::vector<mapCell>(_w * _h);
@@ -115,26 +117,51 @@ void Map::setColor(SDL_Renderer *renderer, Terrain type){
 
 void Map::Draw(SDL_Renderer *renderer){
 
-    for(int i = 0; i < _w * _h; i++){
-        //map[i].type = terrain;                                              //NEW-Agi
-        if(map[i].type != Terrain::VOID){
+    // for(int i = 0; i < _w * _h; i++){                                  //NEW-Agi
+    //     if(map[i].type != Terrain::VOID){
 
-            if(map[i].is_glowing){
+    //         if(map[i].is_glowing){
 
-                map[i].dstRect.x = map[i].srcRect.x - (highlightBorder / 2);
-                map[i].dstRect.y = map[i].srcRect.y - (highlightBorder / 2);
-                map[i].dstRect.w = map[i].srcRect.w + (highlightBorder);
-                map[i].dstRect.h = map[i].srcRect.h + (highlightBorder);
-                setColor(renderer, Terrain::VOID);
-                SDL_RenderFillRectF(renderer, &map[i].dstRect);
+    //             map[i].dstRect.x = map[i].srcRect.x - (highlightBorder / 2);
+    //             map[i].dstRect.y = map[i].srcRect.y - (highlightBorder / 2);
+    //             map[i].dstRect.w = map[i].srcRect.w + (highlightBorder);
+    //             map[i].dstRect.h = map[i].srcRect.h + (highlightBorder);
+    //             setColor(renderer, Terrain::VOID);
+    //             SDL_RenderFillRectF(renderer, &map[i].dstRect);
 
-            }
+    //         }
 
-            setColor(renderer, map[i].type);
-            map[i].dstRect = map[i].srcRect;
-            SDL_RenderFillRectF(renderer, &map[i].dstRect);
+    //         setColor(renderer, map[i].type);
+    //         map[i].dstRect = map[i].srcRect;
+    //         SDL_RenderFillRectF(renderer, &map[i].dstRect);
 
-        }
+    //     }
+    // }
+
+    std::vector<Point>& zSpace = zorder.getSpace();
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+    for(int i = 0; i < zSpace.size() - 1; i++){
+        SDL_RenderDrawLineF(renderer, zSpace[i].x, zSpace[i].y, zSpace[i + 1].x, zSpace[i + 1].y);
+    }
+
+    
+    int x, y;
+    SDL_PumpEvents();
+    const Uint32 mState = SDL_GetMouseState(&x, &y);
+
+    if(x > width || x < 0 || y < 0 || y > height){
+        return;
+    }
+
+    Point mouse(x / numOfCols, y / numOfRows);
+    Point tl = (mouse - Point(10, 10));
+    Point rb = (mouse + Point(10, 10));
+
+    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+    std::vector<Point> highlight = zorder.inRange(tl, rb);
+    for(int i = 0; i < highlight.size() - 1; i++){
+        SDL_RenderDrawLineF(renderer, highlight[i].x, highlight[i].y, highlight[i + 1].x, highlight[i + 1].y);
     }
 
     if(searchProximityVisible && mode == Mode::QUERY){
@@ -150,7 +177,7 @@ void Map::Draw(SDL_Renderer *renderer){
         };
 
         SDL_RenderDrawRectF(renderer, &mouseRect);
-        
+
     }
 
 
@@ -188,6 +215,8 @@ void Map::edit(){
                 }
             }
     }
+
+
 
     if(mousePressed && (!(mState & SDL_BUTTON_LMASK))){
         mousePressed = false;

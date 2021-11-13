@@ -10,6 +10,7 @@
 #include "imgui_impl_sdlrenderer.h"
 
 #include "point.h"
+#include "zorder.h"
 #include "quadTree.h"
 
 enum class Terrain {
@@ -67,6 +68,9 @@ class Map {
 
     // Quadtree
     Quad *qt;
+
+    // Zordering
+    Z zorder;
 
     public:
         Map(int width, int height, int numOfCols = 10, int numOfRows = 10);

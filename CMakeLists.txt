@@ -43,6 +43,7 @@ target_link_libraries(${PROJECT_NAME} SDL2main SDL2-static IMGUI)
 
 
 add_executable(test "test/vec.cpp"
+                "src/point.cpp"  "include/point.h"
                 "src/zorder.cpp" "include/zorder.h")
 
 # target_link_libraries(test SDL2main SDL2-static IMGUI)
