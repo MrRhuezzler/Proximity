@@ -12,6 +12,7 @@
 #include "point.h"
 #include "quadTree.h"
 
+
 enum class Terrain {
     VOID,
     BOUNDARY,
@@ -22,7 +23,6 @@ enum class Terrain {
     BOUTIQUE,
     TERRAIN_COUNT
 };
-std::ostream& operator<< (std::ostream&, Terrain);
 
 enum class Mode {
     IDLE,
@@ -32,40 +32,40 @@ enum class Mode {
     MODE_COUNT
 };
 
-// static const char* modeNames[(int)Mode::MODE_COUNT] = {"IDLE", "EDIT"};
+std::ostream& operator<< (std::ostream&, Terrain);
 
 class Quad;
 class Map {
 
-    int width, height;
+    int width, height;                  // Width and height of the map respectively
     int numOfCols, numOfRows;
     int _w, _h;
 
-    Point center;
+    Point center;                       
 
     Point searchProximity;
     bool searchProximityVisible;
-    struct mapCell {
+    struct mapCell {                    // mapCell represents each block in the map
         Terrain type;
         bool is_glowing;
         SDL_FRect srcRect;
         SDL_FRect dstRect;
     };
 
-    std::vector<mapCell> map;
+    std::vector<mapCell> map;           // map is the collection of mapCells(blocks)
     int highlightBorder;
 
     // Locations
-    std::set<int> locations;
+    std::set<int> locations;            // Set of locations included in the map
 
-    Mode mode;
-    Terrain edit_terrain;        //The terrain to be drawn
-    Terrain query_terrain;
+    Mode mode;                          // Current mode
+    Terrain edit_terrain;               // The terrain to be drawn
+    Terrain query_terrain;              // The terrain to be queried 
 
-    // mouse debounce
+    // Mouse debounce
     bool mousePressed;
 
-    // Quadtree
+    // Quad tree
     Quad *qt;
 
     public:

@@ -47,7 +47,7 @@ class Z {
         std::string toBitString(int zCode);
         pointBitString zCodeToPointBitString(std::string zBitString);
         std::string decToBin(int value);
-        int Z::binToDec(std::string bitString);
+        int binToDec(std::string bitString);
 
         std::string simpleReplaceAndFill(int pos, std::string source, char c, char fillc);
         
