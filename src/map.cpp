@@ -6,6 +6,7 @@
 static const char* modeNames[(int)Mode::MODE_COUNT] = {"IDLE", "EDIT", "QUERY", "UPDATE"};
 static const char* terrainNames[(int)Terrain::TERRAIN_COUNT] = {"VOID", "BOUNDARY", "LOCATION", "HOTEL", "MARKET", "HOSPITAL", "BOUTIQUE"};
 
+// Overloading 'cout' for printing the terrain type
 std::ostream& operator<< (std::ostream& stm, Terrain t)
 {
     switch(t)
@@ -29,17 +30,18 @@ std::ostream& operator<< (std::ostream& stm, Terrain t)
     }
 }
 
+// Constructor of the class Map
 Map::Map(int width, int height, int numOfCols, int numOfRows) 
 :width(width), height(height), numOfCols(numOfCols), numOfRows(numOfRows)
 {
 
-    mode = Mode::IDLE;
-    edit_terrain = Terrain::VOID;
-    query_terrain = Terrain::HOTEL;
+    mode = Mode::IDLE;                                              // The initial mode is set to IDLE
+    edit_terrain = Terrain::VOID;                                   // The initial edit terrain is set to VOID
+    query_terrain = Terrain::LOCATION;                              // The initial query terrain is set to LOCATION
     mousePressed = false;
     qt = nullptr;
     locations = std::set<int>();
-    searchProximity = Point(100, 100);
+    searchProximity = Point(100, 100);                              // The initial search range is set to a 100X100 square
     searchProximityVisible = false;
     highlightBorder = 5;
     center = Point(width / 2.0, height / 2.0);
@@ -50,6 +52,7 @@ Map::Map(int width, int height, int numOfCols, int numOfRows)
     _h = height / numOfRows;
     map = std::vector<mapCell>(_w * _h);
 
+    // Initializing the blocks of the map
     for(int i = 0; i < _w; i++){
         for(int j = 0; j < _h; j++){
 
@@ -82,6 +85,7 @@ Map::Map(int width, int height, int numOfCols, int numOfRows)
 
 }
 
+// Assigning colours for each terrain type
 void Map::setColor(SDL_Renderer *renderer, Terrain type){
     switch (type)
     {
@@ -164,6 +168,7 @@ void Map::Draw(SDL_Renderer *renderer){
         SDL_RenderDrawLineF(renderer, highlight[i].x, highlight[i].y, highlight[i + 1].x, highlight[i + 1].y);
     }
 
+    //Drawing the search range boundary
     if(searchProximityVisible && mode == Mode::QUERY){
 
         int x, y;
@@ -191,27 +196,28 @@ void Map::edit(){
     const Uint32 mState = SDL_GetMouseState(&x, &y);
     const Uint8 *kState = SDL_GetKeyboardState(NULL);
 
-    if(x > width || x < 0 || y < 0 || y > height){
+    if(x > width || x < 0 || y < 0 || y > height){                  // Checking if the mouse pointer is within the map boundaries
         return;
     }
 
-    Point mouse(x / numOfCols, y / numOfRows);
+    Point mouse(x / numOfCols, y / numOfRows);                      // Converting the position of the mouse to its equivalent block position in the map
 
     if(!mousePressed && (mState & SDL_BUTTON_LMASK)){
-        mousePressed = true;
+        mousePressed = true;                                        // mousePressed bool helps us to avoid holding down the cursor to draw multiple blocks
         if(map[transform(mouse)].type != Terrain::BOUNDARY)
-            if(map[transform(mouse)].type != Terrain::VOID){
-
+            if(map[transform(mouse)].type != Terrain::VOID){        
+                // Clicking on a non-VOID block turns it to VOID
                 map[transform(mouse)].type = Terrain::VOID;
                 auto it = locations.find(transform(mouse));
                 if(it != locations.end()){
+                    // Deleting the location from the set locations
                     locations.erase(it);
                 }
 
             }else{
-                map[transform(mouse)].type = edit_terrain;
+                map[transform(mouse)].type = edit_terrain;          // Setting the terrain of the block to be drawn
                 if(edit_terrain != Terrain::VOID || edit_terrain != Terrain::BOUNDARY){
-                    locations.insert(transform(mouse));
+                    locations.insert(transform(mouse));             // Inserting the newly drawn location into the set locations
                 }
             }
     }
@@ -224,54 +230,57 @@ void Map::edit(){
 
 }
 
+// Updating the map once it has been edited
 void Map::update(){
 
-    if(qt){
+    if(qt){                 // If a quad tree already exists, we delete it to create a new one for the newly added locations
         delete qt;
     }
 
     qt = new Quad(Point(0, 0), Point(width, height), 4);
+    // Inserting the locations into the quad tree
     for(auto it = locations.begin(); it != locations.end(); it++){
         Point p = (Point(map[*it].srcRect.x, map[*it].srcRect.y));
         Node* n = new Node(p.x, p.y, map[*it].type);
         qt->insert(n);
     }
 
+    // After updating, the mode is set to IDLE
     mode = Mode::IDLE;
 
 }
 
 void Map::query(){
 
-    if(!qt){
+    if(!qt){                            // If there is no quad tree, then there is nothing to query
         return;
     }
 
-    for(auto i : locations){
-        map[i].is_glowing = false;
+    for(auto i : locations){            
+        map[i].is_glowing = false;      // Resetting the is_glowing bool if it was previously set
     }
 
     int x, y;
     SDL_PumpEvents();
     const Uint32 mState = SDL_GetMouseState(&x, &y);
 
-    if(x > width || x < 0 || y < 0 || y > height){
+    if(x > width || x < 0 || y < 0 || y > height){          // Checking if the mouse pointer is within the boundaries of the map
         return;
     }
 
     Point mouse(x, y);
-    Point tl = (mouse - searchProximity);
-    Point rb = (mouse + searchProximity);
+    Point tl = (mouse - searchProximity);                   // tl is the top left point of the query range boundary
+    Point rb = (mouse + searchProximity);                   // rb is the bottom right point of the query range boundary
 
-    auto desired_locations = qt->inRange(tl, rb, query_terrain);
+    auto desired_locations = qt->inRange(tl, rb, query_terrain);        // This is the main query call using quad tree to find the locations in the query range
 
     for(auto d : desired_locations){
-        map[transform(d->x / numOfCols, d->y / numOfRows)].is_glowing = true;
+        map[transform(d->x / numOfCols, d->y / numOfRows)].is_glowing = true;       //Setting the is_glowing bool to true for the locations in range
     }
 
 }
 
-
+// If E is pressed, the mode is set to EDIT
 void Map::setMode(){
 
     SDL_PumpEvents();
@@ -283,11 +292,13 @@ void Map::setMode(){
 
 }
 
+// Main update function that handles the modes and their respective functions
 void Map::Update(){
 
     SDL_PumpEvents();
     const Uint8 *kState = SDL_GetKeyboardState(NULL);
     
+    // If 'R' and 'Left CTRL' are pressed together, the mode is set to IDLE
     if(kState[SDL_SCANCODE_R] && kState[SDL_SCANCODE_LCTRL]){
         mode = Mode::IDLE;
     }
@@ -315,7 +326,7 @@ void Map::Update(){
     }
 }
 
-
+// UI to be rendered
 void Map::UI(){
 
     ImGui::Begin("Map Editor");
@@ -357,9 +368,9 @@ Point Map::toComCord(Point p){
 
 // i - cols
 // j - rows
-int Map::transform(int i, int j) 
+int Map::transform(int i, int j)                            //Row-major ordering
 {
-    return (_w) * j + i;
+    return (_w) * j + i;        //In 1D, (x,y) becomes y * width + x
 }
 
 int Map::transform(Point v)
