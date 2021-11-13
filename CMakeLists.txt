@@ -37,12 +37,12 @@ add_executable(${PROJECT_NAME} "src/main.cpp"
                 "src/map.cpp" "include/map.h"
                 "src/point.cpp" "include/point.h"
                 "src/quadTree.cpp" "include/quadTree.h"
-                "src/zordering.cpp" "include/zordering.h")
+                "src/zorder.cpp" "include/zorder.h")
 
 target_link_libraries(${PROJECT_NAME} SDL2main SDL2-static IMGUI)
 
 
 add_executable(test "test/vec.cpp"
-                "src/zordering.cpp" "include/zordering.h")
+                "src/zorder.cpp" "include/zorder.h")
 
 # target_link_libraries(test SDL2main SDL2-static IMGUI)
