@@ -11,6 +11,9 @@
 #define WIDTH 1100
 #define HEIGHT 600
 
+#define V_WIDTH WIDTH - 250
+#define V_HEIGHT HEIGHT
+
 int main(int argv, char** args) {
 
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0){
@@ -31,14 +34,17 @@ int main(int argv, char** args) {
         return 0;
     }
 
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, V_WIDTH, V_HEIGHT);
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     ImGui::StyleColorsDark();
     ImGui_ImplSDL2_InitForSDLRenderer(window);
     ImGui_ImplSDLRenderer_Init(renderer);
 
-    Map map(WIDTH - 300, HEIGHT, 10, 10);
+    Map map(WIDTH - 250, HEIGHT, 10, 10);
 
     SDL_Event event;
     bool is_running = true;
@@ -57,14 +63,52 @@ int main(int argv, char** args) {
         ImGui_ImplSDL2_NewFrame(window);
         ImGui::NewFrame();
 
+        // Create a Docking Space
+        // {
+            ImGui::SetNextWindowPos(ImVec2(0, 0));                                                // always at the window origin
+            ImGui::SetNextWindowSize(ImVec2(float(WIDTH), float(HEIGHT)));    // always at the window size
+
+            ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoBringToFrontOnFocus |                 // we just want to use this window as a host for the menubar and docking
+                ImGuiWindowFlags_NoNavFocus |                                                      // so turn off everything that would make it act like a window
+                ImGuiWindowFlags_NoDocking |
+                ImGuiWindowFlags_NoTitleBar |
+                ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoMove |
+                ImGuiWindowFlags_NoCollapse |
+                ImGuiWindowFlags_NoBackground;
+
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+            bool show = (ImGui::Begin("Main", NULL, windowFlags));
+            ImGui::PopStyleVar();
+            ImGui::DockSpace(ImGui::GetID("Dockspace"), ImVec2(0.0f, 0.0f),  ImGuiDockNodeFlags_PassthruCentralNode);
+            ImGui::End();
+        // }
+
+        // Displaying the Texture
+        // {
+            // ImGui::SetNextWindowSize(ImVec2(float(V_WIDTH), float(V_HEIGHT)));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+            // ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoCollapse
+            ImGui::Begin("Viewport", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoCollapse);
+            ImGui::PopStyleVar();
+            ImVec2 viewportSize = ImGui::GetWindowSize();
+            ImGui::Image((void*)texture, viewportSize);
+            ImGui::End();
+        // }
+
+        // Renderer to Texture
+        SDL_SetRenderTarget(renderer, texture);
+
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-
         map.UI();
         map.Draw(renderer);
         map.Update();
 
-        // Renderering stuffs
+        SDL_SetRenderTarget(renderer, NULL);
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
 
         ImGui::Render();
         ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());

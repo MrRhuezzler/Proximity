@@ -319,32 +319,6 @@ void Map::UI(){
 
     ImGui::Begin("Map Editor");
 
-    ImGui::Checkbox("Show Z Curve", &showZCurve);
-
-    if(showZCurve){
-        
-        int res = resolution;
-        int cs = cScale;
-        int rs = rScale;
-        ImGui::DragInt("Resolution", &resolution, 1.0f, 2, 7);
-        ImGui::DragInt("x Scale", &cScale, 1.0f, 2, 30);
-        ImGui::DragInt("y Scale", &rScale, 1.0f, 2, 30);
-
-        bool resolutionChanged = res != resolution;
-        bool csChanged = cs != cScale;
-        bool rsChanged = rs != rScale;
-
-        if((resolutionChanged || csChanged || rsChanged)){
-
-            if(zorder){
-                delete zorder;
-            }
-
-            zorder = new Z(cScale, rScale, resolution);
-
-        }
-    }
-
     ImGui::Text("Mode Selector");
     const char* currentModeName = (mode >= Mode::IDLE && mode < Mode::MODE_COUNT) ? modeNames[(int)mode] : "Unknown";
     ImGui::SliderInt("Mode", (int*)(&mode), 0, ((int)Mode::MODE_COUNT) - 1, currentModeName);
@@ -368,6 +342,33 @@ void Map::UI(){
 
     }
 
+    ImGui::End();
+
+    ImGui::Begin("Z Curve");
+    ImGui::Checkbox("Show Z Curve", &showZCurve);
+    if(showZCurve){
+        
+        int res = resolution;
+        int cs = cScale;
+        int rs = rScale;
+        ImGui::DragInt("Resolution", &resolution, 1.0f, 2, 7);
+        ImGui::DragInt("x Scale", &cScale, 1.0f, 2, 30);
+        ImGui::DragInt("y Scale", &rScale, 1.0f, 2, 30);
+
+        bool resolutionChanged = res != resolution;
+        bool csChanged = cs != cScale;
+        bool rsChanged = rs != rScale;
+
+        if((resolutionChanged || csChanged || rsChanged)){
+
+            if(zorder){
+                delete zorder;
+            }
+
+            zorder = new Z(cScale, rScale, resolution);
+
+        }
+    }
     ImGui::End();
 
 }

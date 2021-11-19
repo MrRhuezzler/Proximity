@@ -128,9 +128,9 @@ int Z::binToDec(std::string bitString){
     return x;
 }
 
-int Z::computeZCode(Point p) 
+std::string Z::computeZCode(Point p) 
 {
-    return binToDec(pointBitStringToZCode(pointToBitString(p)));
+    return pointBitStringToZCode(pointToBitString(p));
 }
 
 Point Z::computePoint(int zCode) 
@@ -191,18 +191,18 @@ std::vector<Point>& Z::getSpace()
     return space;
 }
 
-std::vector<Point> Z::getRange(Point tl, Point m, Point rb){
+// std::vector<Point> Z::getRange(Point tl, Point m, Point rb){
 
-    int zHigh = computeZCode(rb);
-    int zM = computeZCode(m);
-    int zLow = computeZCode(tl);
+//     int zHigh = computeZCode(rb);
+//     int zM = computeZCode(m);
+//     int zLow = computeZCode(tl);
 
-    std::vector<Point> points;
-    for(int i = zLow; i < zHigh; i++){
-        Point p = computePoint(i);
-        if(p.x < tl.x || p.y < tl.y || p.x > rb.x || p.y > rb.y) continue;
-        points.push_back(computePoint(i));
-    }
+//     std::vector<Point> points;
+//     for(int i = zLow; i < zHigh; i++){
+//         Point p = computePoint(i);
+//         if(p.x < tl.x || p.y < tl.y || p.x > rb.x || p.y > rb.y) continue;
+//         points.push_back(computePoint(i));
+//     }
 
-    return points;
-}
+//     return points;
+// }

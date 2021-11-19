@@ -43,10 +43,8 @@ class Z {
         Z(int colScale, int rowScale, int resolution);
         std::vector<Point>& getSpace();
 
-        int computeZCode(Point p);
+        std::string computeZCode(Point p);
         Point computePoint(int zCode);
-
-        std::vector<Point> getRange(Point tl, Point m, Point rb);
 
         std::vector<Point> buildPath();
         std::vector<Point> buildPathFromRange(int min, int max);
